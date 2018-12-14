@@ -1,6 +1,6 @@
 // +build !windows,!plan9
 
-package log15
+package log
 
 import (
 	"log/syslog"
@@ -36,6 +36,8 @@ func sharedSyslog(fmtr Format, sysWr *syslog.Writer, err error) (Handler, error)
 			syslogFn = sysWr.Warning
 		case LvlInfo:
 			syslogFn = sysWr.Info
+		case LvlTrace:
+			syslogFn = sysWr.Info  // Trace is same to Info in syslog
 		case LvlDebug:
 			syslogFn = sysWr.Debug
 		}

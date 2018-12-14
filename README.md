@@ -1,4 +1,7 @@
+This depository is a fork of log15. Add time-based log rotation and some other improvements.
+
 ![obligatory xkcd](http://imgs.xkcd.com/comics/standards.png)
+
 
 # log15 [![godoc reference](https://godoc.org/github.com/inconshreveable/log15?status.png)](https://godoc.org/github.com/inconshreveable/log15) [![Build Status](https://travis-ci.org/inconshreveable/log15.svg?branch=master)](https://travis-ci.org/inconshreveable/log15)
 

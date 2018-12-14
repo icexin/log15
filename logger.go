@@ -1,4 +1,4 @@
-package log15
+package log
 
 import (
 	"fmt"
@@ -21,6 +21,7 @@ const (
 	LvlError
 	LvlWarn
 	LvlInfo
+	LvlTrace
 	LvlDebug
 )
 
@@ -29,6 +30,8 @@ func (l Lvl) String() string {
 	switch l {
 	case LvlDebug:
 		return "dbug"
+	case LvlTrace:
+		return "trce"
 	case LvlInfo:
 		return "info"
 	case LvlWarn:
@@ -48,6 +51,8 @@ func LvlFromString(lvlString string) (Lvl, error) {
 	switch lvlString {
 	case "debug", "dbug":
 		return LvlDebug, nil
+	case "trace", "trce":
+		return LvlTrace, nil
 	case "info":
 		return LvlInfo, nil
 	case "warn":
@@ -91,6 +96,7 @@ type Logger interface {
 
 	// Log a message at the given level with context key/value pairs
 	Debug(msg string, ctx ...interface{})
+	Trace(msg string, ctx ...interface{})
 	Info(msg string, ctx ...interface{})
 	Warn(msg string, ctx ...interface{})
 	Error(msg string, ctx ...interface{})
@@ -133,6 +139,10 @@ func newContext(prefix []interface{}, suffix []interface{}) []interface{} {
 
 func (l *logger) Debug(msg string, ctx ...interface{}) {
 	l.write(msg, LvlDebug, ctx)
+}
+
+func (l *logger) Trace(msg string, ctx ...interface{}) {
+	l.write(msg, LvlTrace, ctx)
 }
 
 func (l *logger) Info(msg string, ctx ...interface{}) {

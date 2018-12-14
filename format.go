@@ -1,4 +1,4 @@
-package log15
+package log
 
 import (
 	"bytes"
@@ -57,6 +57,8 @@ func TerminalFormat() Format {
 			color = 33
 		case LvlInfo:
 			color = 32
+		case LvlTrace:
+			color = 34
 		case LvlDebug:
 			color = 36
 		}

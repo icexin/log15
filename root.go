@@ -1,4 +1,4 @@
-package log15
+package log
 
 import (
 	"os"
@@ -45,6 +45,11 @@ func Root() Logger {
 // Debug is a convenient alias for Root().Debug
 func Debug(msg string, ctx ...interface{}) {
 	root.write(msg, LvlDebug, ctx)
+}
+
+// Trace is a convenient alias for Root().Trace
+func Trace(msg string, ctx ...interface{}) {
+	root.write(msg, LvlTrace, ctx)
 }
 
 // Info is a convenient alias for Root().Info
