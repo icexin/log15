@@ -1,3 +1,8 @@
+/**
+* Time based log rotation Writer.
+* Could rotate log file every `rotateInterval` minutes.
+**/
+
 package log
 
 import (
@@ -34,11 +39,6 @@ func NewTimeRotateWriter(filename string, interval int, backupCount int) (*TimeR
 	return &wr, err
 }
 
-// WriteString writes the string data into the file, which may rotate the file if necessary.
-func (wr *TimeRotateWriter) WriteString(data string) (succBytes int, err error) {
-	return wr.Write([]byte(data))
-}
-
 // implements Write interface of io.Writer
 func (wr *TimeRotateWriter) Write(data []byte) (succBytes int, err error){
 	wr.mutex.Lock()
@@ -58,7 +58,7 @@ func (wr *TimeRotateWriter) Write(data []byte) (succBytes int, err error){
 	return wr.file.Write(data)
 }
 
-// Close closes the handler.
+// Close of WriterCloser
 func (wr *TimeRotateWriter) Close() (err error) {
 	if err = wr.file.Close(); err != nil {
 		return
@@ -78,10 +78,12 @@ func (wr *TimeRotateWriter) openFile() error{
 	return nil
 }
 
+// check if should rotate the log
 func (wr *TimeRotateWriter) shouldRotate() bool {
 	return time.Now().Unix() >= wr.rotateAt
 }
 
+// calculate the next log rotation time
 func (wr *TimeRotateWriter) calcNextRotateTime() {
 	currentTime := time.Now().Unix()
 
@@ -93,6 +95,7 @@ func (wr *TimeRotateWriter) calcNextRotateTime() {
 	wr.rotateAt = int64(currentTime - int64(currentSecond) + wr.intervalInSeconds)
 }
 
+// do log rotation
 func (wr *TimeRotateWriter) rotate() (err error) {
 	if err = wr.Close(); err != nil{
 		return err
@@ -119,6 +122,7 @@ func (wr *TimeRotateWriter) rotate() (err error) {
 	return err
 }
 
+// delete expired log files
 func (wr *TimeRotateWriter) deleteExpiredFiles() {
 	// TODO: implement deleting expired files 
 }
