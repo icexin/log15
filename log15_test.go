@@ -600,6 +600,7 @@ func TestConcurrent(t *testing.T) {
 func TestRotateFileHandler(t *testing.T){
 	l := New()
 	fmtr := LogfmtFormat()
+	// rotate every 1 minutes and keep 2 backup log files
 	l.SetHandler(SyncHandler(Must.RotateFileHandler("test.log", fmtr, 1, 2)))
 
 	times := 150

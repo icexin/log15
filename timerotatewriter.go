@@ -58,12 +58,14 @@ func (wr *TimeRotateWriter) Write(data []byte) (succBytes int, err error){
 		return 0, err
 	}
 
+	// check if the right time to rotate log
 	if wr.shouldRotate(){
 		if err := wr.rotate(); err != nil{
 			return 0, err
 		}
 	}
 
+	// write log
 	return wr.file.Write(data)
 }
 

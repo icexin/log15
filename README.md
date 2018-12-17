@@ -1,9 +1,11 @@
+# About
 This depository is a fork of log15. Add time-based log rotation and some other improvements.
 
-![obligatory xkcd](http://imgs.xkcd.com/comics/standards.png)
+For the original [log15](https://github.com/inconshreveable/log15) depository, please click the link.
 
 
-# log15 [![godoc reference](https://godoc.org/github.com/inconshreveable/log15?status.png)](https://godoc.org/github.com/inconshreveable/log15) [![Build Status](https://travis-ci.org/inconshreveable/log15.svg?branch=master)](https://travis-ci.org/inconshreveable/log15)
+
+# log15 
 
 Package log15 provides an opinionated, simple toolkit for best-practice logging in Go (golang) that is both human and machine readable. It is modeled after the Go standard library's [`io`](http://golang.org/pkg/io/) and [`net/http`](http://golang.org/pkg/net/http/) packages and is an alternative to the standard library's [`log`](http://golang.org/pkg/log/) package.
 
@@ -16,6 +18,7 @@ Package log15 provides an opinionated, simple toolkit for best-practice logging 
 - Color terminal support
 - Built-in support for logging to files, streams, syslog, and the network
 - Support for forking records to multiple handlers, buffering records for output, failing over from failed handler writes, + more
+- **Time based log rotation**. Support log rotation interval in minutes, and keep specifed numbers of old log files.
 
 ## Versioning
 The API of the master branch of log15 should always be considered unstable. If you want to rely on a stable API,
@@ -24,7 +27,7 @@ you must vendor the library.
 ## Importing
 
 ```go
-import log "github.com/inconshreveable/log15"
+import "github.com/yucaowang/log15"
 ```
 
 ## Examples
@@ -56,6 +59,30 @@ Will result in output that looks like this:
 ```
 WARN[06-17|21:58:10] abnormal conn rate                       module=app/server rate=0.500 low=0.100 high=0.800
 INFO[06-17|21:58:10] connection open                          module=app/server raddr=10.0.0.1
+```
+
+## Log Rotate Example
+Using RotateFileHandler to create time-based rotation strategy.
+
+```go
+l := New()
+fmtr := LogfmtFormat()
+// rotate every 10 minutes and keep 30 backup log files
+l.SetHandler(SyncHandler(Must.RotateFileHandler("test.log", fmtr, 1, 30)))
+
+times := 150
+for i := 0; i < times; i++ {
+    l.Info("this is a info", "index", i)
+    l.Trace("this is a trace", "index", i)
+    time.Sleep(time.Second * 1)
+}
+```
+
+The log file look like:
+
+```
+-rw-r--r-- 1 work work  3915 Dec 17 16:18 test.log
+-rw-r--r-- 1 work work  7889 Dec 17 16:17 test.log.201812171617
 ```
 
 ## Breaking API Changes
