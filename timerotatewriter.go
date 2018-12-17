@@ -6,10 +6,14 @@
 package log
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"sync"
+	"sort"
 	"time"
+	"path/filepath"
+	"regexp"
 )
 
 type TimeRotateWriter struct{
@@ -24,8 +28,13 @@ type TimeRotateWriter struct{
 }
 
 func NewTimeRotateWriter(filename string, interval int, backupCount int) (*TimeRotateWriter, error) {
+	fullname,err := filepath.Abs(filename)
+	if err != nil{
+		return nil, err
+	}
+
 	wr := TimeRotateWriter{
-		filename: 		filename,
+		filename: 		fullname,
 		maxBackups:		backupCount,
 		rotateInterval:	interval,
 	}
@@ -35,7 +44,7 @@ func NewTimeRotateWriter(filename string, interval int, backupCount int) (*TimeR
 	wr.calcNextRotateTime()
 
 	// open file to write
-	err := wr.openFile();
+	err = wr.openFile();
 	return &wr, err
 }
 
@@ -124,5 +133,51 @@ func (wr *TimeRotateWriter) rotate() (err error) {
 
 // delete expired log files
 func (wr *TimeRotateWriter) deleteExpiredFiles() {
-	// TODO: implement deleting expired files 
+	allfiles := make([]string, 0, 50)
+	path, fname := filepath.Split(wr.filename)
+
+	// compile log file regex
+	regstr := fname + ".\\d*"
+	fileRegex, err := regexp.Compile(regstr)
+	if err != nil{
+		fmt.Println("regstr compile failed, regstr=", regstr)
+		return
+	}
+
+	// iterate all files in the directory
+	err = filepath.Walk(path, func(curpath string, info os.FileInfo, err error) error {
+		if err != nil{
+			fmt.Println("walk error! err=", err)
+			return nil
+		}
+
+		if info.IsDir(){
+			return nil
+		}
+
+		if matched := fileRegex.MatchString(info.Name()); matched {
+			allfiles = append(allfiles, curpath)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return
+	}
+
+	// sort files by name
+	sort.Strings(allfiles)
+
+	// remove expired files
+	fileCount := len(allfiles)
+	fmt.Println("matched file count=", fileCount)
+	if fileCount > wr.maxBackups{
+		for i := 0; i <  fileCount - wr.maxBackups; i++ {
+			err := os.Remove(allfiles[i])
+			if err != nil {
+				fmt.Println("remove file failed!, file=", allfiles[i])
+			}
+		}
+	}
 }

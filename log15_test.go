@@ -600,9 +600,9 @@ func TestConcurrent(t *testing.T) {
 func TestRotateFileHandler(t *testing.T){
 	l := New()
 	fmtr := LogfmtFormat()
-	l.SetHandler(SyncHandler(Must.RotateFileHandler("test.log", fmtr, 1, 30)))
+	l.SetHandler(SyncHandler(Must.RotateFileHandler("test.log", fmtr, 1, 2)))
 
-	times := 100
+	times := 150
 	for i := 0; i < times; i++ {
 		l.Info("this is a info", "index", i)
 		l.Trace("this is a trace", "index", i)
