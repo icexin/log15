@@ -80,6 +80,14 @@ func (wr *TimeRotateWriter) Close() (err error) {
 
 func (wr *TimeRotateWriter) openFile() error{
 	if wr.file == nil{
+		// mkdir if not exist
+		path, _ := filepath.Split(wr.filename)
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			os.Mkdir(path, 0755)
+			os.Chmod(path, 0755)
+		}
+
+		// open file for append and write
 		fd, err := os.OpenFile(wr.filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil{
 			return err
