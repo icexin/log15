@@ -70,6 +70,14 @@ func FileHandler(path string, fmtr Format) (Handler, error) {
 	return closingHandler{f, StreamHandler(f, fmtr)}, nil
 }
 
+func RotateFileHandler(path string, fmtr Format, interval int, backupCount int) (Handler, error){
+	f, err := NewTimeRotateWriter(path, interval, backupCount)
+	if err != nil {
+		return nil, err
+	}
+	return closingHandler{f, StreamHandler(f, fmtr)}, nil
+}
+
 // NetHandler opens a socket to the given address and writes records
 // over the connection.
 func NetHandler(network, addr string, fmtr Format) (Handler, error) {
@@ -350,4 +358,8 @@ func (m muster) FileHandler(path string, fmtr Format) Handler {
 
 func (m muster) NetHandler(network, addr string, fmtr Format) Handler {
 	return must(NetHandler(network, addr, fmtr))
+}
+
+func (m muster) RotateFileHandler(path string, fmtr Format, interval int, backups int) Handler {
+	return must(RotateFileHandler(path, fmtr, interval, backups))
 }

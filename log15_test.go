@@ -596,3 +596,16 @@ func TestConcurrent(t *testing.T) {
 		}
 	}
 }
+
+func TestRotateFileHandler(t *testing.T){
+	l := New()
+	fmtr := LogfmtFormat()
+	l.SetHandler(SyncHandler(Must.RotateFileHandler("test.log", fmtr, 1, 30)))
+
+	times := 100
+	for i := 0; i < times; i++ {
+		l.Info("this is a info", "index", i)
+		l.Trace("this is a trace", "index", i)
+		time.Sleep(time.Second * 1)
+	}
+}
