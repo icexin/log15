@@ -601,12 +601,19 @@ func TestRotateFileHandler(t *testing.T){
 	l := New()
 	fmtr := LogfmtFormat()
 	// rotate every 1 minutes and keep 2 backup log files
-	l.SetHandler(SyncHandler(Must.RotateFileHandler("./log/test.log", fmtr, 1, 2)))
+	l.SetHandler(MultiHandler(
+		BoundLvlFilterHandler(
+			LvlDebug, 
+			LvlInfo, 
+			Must.RotateFileHandler("./log/test.log", fmtr, 1, 2)),
+		LvlFilterHandler(
+			LvlWarn, 
+			Must.RotateFileHandler("./log/test.log.wf", fmtr, 1, 2))))
 
 	times := 150
 	for i := 0; i < times; i++ {
 		l.Info("this is a info", "index", i)
-		l.Trace("this is a trace", "index", i)
+		l.Warn("this is a warn", "index", i)
 		time.Sleep(time.Second * 1)
 	}
 }

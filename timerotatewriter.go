@@ -147,7 +147,7 @@ func (wr *TimeRotateWriter) deleteExpiredFiles() {
 	path, fname := filepath.Split(wr.filename)
 
 	// compile log file regex
-	regstr := fname + ".\\d*"
+	regstr := fname + ".\\d*$"
 	fileRegex, err := regexp.Compile(regstr)
 	if err != nil{
 		fmt.Println("regstr compile failed, regstr=", regstr)

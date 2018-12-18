@@ -202,6 +202,19 @@ func LvlFilterHandler(maxLvl Lvl, h Handler) Handler {
 	}, h)
 }
 
+// BoundLvlFilterHandler returns a Handler that only writes
+// records which are less than the given `maxLvl` verbosity
+// level and greater than `minLvl` level to the wrapped Handler.
+// For example, to only log Trace/Info records:
+//
+//  log.BoundLvlFilterHandler(log.LvlTrace, log.LvlInfo, log.StdoutHandler)
+//
+func BoundLvlFilterHandler(maxLvl Lvl, minLvl Lvl, h Handler) Handler {
+	return FilterHandler(func(r *Record) (pass bool) {
+		return r.Lvl >= minLvl && r.Lvl <= maxLvl
+	}, h)
+}
+
 // MultiHandler dispatches any write to each of its handlers.
 // This is useful for writing different types of log information
 // to different locations. For example, to log to a file and
