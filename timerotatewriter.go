@@ -181,7 +181,6 @@ func (wr *TimeRotateWriter) deleteExpiredFiles() {
 
 	// remove expired files
 	fileCount := len(allfiles)
-	fmt.Println("matched file count=", fileCount)
 	if fileCount > wr.maxBackups{
 		for i := 0; i <  fileCount - wr.maxBackups; i++ {
 			err := os.Remove(allfiles[i])
