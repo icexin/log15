@@ -17,14 +17,14 @@ import (
 )
 
 type TimeRotateWriter struct{
-	filename 		string
-	maxBackups		int		// max log files
-	rotateInterval	int		// in minutes
+	filename        string
+	maxBackups      int     // max log files
+	rotateInterval  int     // in minutes
 
-	file 			io.WriteCloser
-	mutex			sync.Mutex
-	rotateAt 		int64
-	intervalInSeconds	int64
+	file            io.WriteCloser
+	mutex           sync.Mutex
+	rotateAt        int64
+	intervalInSeconds   int64
 }
 
 func NewTimeRotateWriter(filename string, interval int, backupCount int) (*TimeRotateWriter, error) {
@@ -34,9 +34,9 @@ func NewTimeRotateWriter(filename string, interval int, backupCount int) (*TimeR
 	}
 
 	wr := TimeRotateWriter{
-		filename: 		fullname,
-		maxBackups:		backupCount,
-		rotateInterval:	interval,
+		filename:       fullname,
+		maxBackups:     backupCount,
+		rotateInterval: interval,
 	}
 
 	// init rotate time
@@ -108,10 +108,16 @@ func (wr *TimeRotateWriter) calcNextRotateTime() {
 
 	timestruct := time.Unix(currentTime, 0)
 	//currentHour := timestruct.Hour()
-	//currentMinute := timestruct.Minute()
+	currentMinute := timestruct.Minute()
 	currentSecond := timestruct.Second()
 
-	wr.rotateAt = int64(currentTime - int64(currentSecond) + wr.intervalInSeconds)
+	// elegent split time for hourly rotation
+	if wr.rotateInterval % 60 == 0 {
+		wr.rotateAt = int64(currentTime + wr.intervalInSeconds - 
+			(int64(currentSecond) + int64(currentMinute) * 60))
+	} else {
+		wr.rotateAt = int64(currentTime - int64(currentSecond) + wr.intervalInSeconds)
+	}
 }
 
 // do log rotation
