@@ -3,7 +3,8 @@ This depository is a fork of log15. Add time-based log rotation and some other i
 
 For the original [log15](https://github.com/inconshreveable/log15) depository, please click the link.
 
-
+--------
+[![Build Status](https://travis-ci.org/Xuper-Deps/log15.svg?branch=master)](https://travis-ci.org/Xuper-Deps/log15)
 
 # log15 
 
